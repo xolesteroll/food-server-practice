@@ -41,7 +41,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
 
-    const deadLine = '2021-06-11';
+    let deadLine = '2021-06-12';
+
 
     const getTimeOffset = (endtime) => {
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -83,9 +84,12 @@ window.addEventListener('DOMContentLoaded', function () {
             hours.textContent = getZero(t.hours);
             minutes.textContent = getZero(t.minutes);
             seconds.textContent = getZero(t.seconds);
-
-            if (t <= 0) {
+            if (t.total <= 0) {
                 clearInterval(timeInterval);
+                days.textContent = 0;
+                hours.textContent = 0;
+                minutes.textContent = 0;
+                seconds.textContent = 0;
             }
         }
     };
@@ -124,7 +128,6 @@ window.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Escape' && modal.classList.contains('show')) {
             closeModal();
-            console.log('no');
         }
     });
 
@@ -254,9 +257,9 @@ window.addEventListener('DOMContentLoaded', function () {
             postData('http://localhost:3000/requests', json)
                 .then(data => {
                     showThanksModal(message.success);
-                    fetch('http://localhost:3000/requests')
-                        .then(data => data.json())
-                        .then(res => console.log(res));
+                    // fetch('http://localhost:3000/requests')
+                    //     .then(data => data.json())
+                    //     .then(res => console.log(res));
                     messageBlock.remove();
                 }).catch(() => {
                     showThanksModal(message.failure);
@@ -360,7 +363,6 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         dotsWrapper.append(dot);
         dots.push(dot);
-        console.log(dots);
     }
 
     rightArrow.addEventListener('click', () => {
@@ -474,5 +476,117 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     // initSlider();
+
+    // Calculator
+
+    const totalResult = document.querySelector('.calculating__result span');
+
+    
+    let sex, 
+    height, weight, age, 
+    ratio = "1.375" ;
+    if (localStorage.getItem('sex')) {
+        sex = localStorage.getItem('sex');
+    } else {
+        sex = 'female';
+        localStorage.setItem('sex', 'female');
+    }
+
+    if (localStorage.getItem('ratio')) {
+        ratio = localStorage.getItem('ratio');
+    } else {
+        ratio = 'female';
+        localStorage.setItem('ratio', 1.375);
+    }
+
+    const initLocalSettings = (selector, activeClass) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(elem => {
+            elem.classList.remove(activeClass);
+            if (elem.getAttribute('id') === localStorage.getItem('sex')) {
+                elem.classList.add(activeClass);
+            } 
+
+            if (elem.getAttribute('data-ratio') === localStorage.getItem('ratio')) {
+                elem.classList.add(activeClass);
+            } 
+        });
+    }
+
+    initLocalSettings('.calculating__choose-item', 'calculating__choose-item_active')
+
+    const calcTotal = () => {
+        if (!sex || !height || !weight || !age || !ratio) {
+            totalResult.textContent = '____';
+            return;
+        }
+
+        if (sex == 'female') {
+            totalResult.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+        } else {
+            totalResult.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+        }
+    };
+
+    calcTotal();
+
+    const getStaticInfo = (parentSelector, activeClass) => {
+        const elements = document.querySelectorAll(`${parentSelector} div`);
+
+        document.querySelector(parentSelector).addEventListener('click', (e) => {
+            if (e.target.getAttribute('data-ratio')) {
+                ratio = +e.target.getAttribute('data-ratio');
+                localStorage.setItem('ratio', +e.target.getAttribute('data-ratio'))
+            } else {
+                sex = e.target.getAttribute('id');
+                localStorage.setItem('sex', e.target.getAttribute('id'))
+            }
+
+            elements.forEach(elem => {
+                elem.classList.remove(activeClass);
+            });
+
+            if (e.target != document.querySelector(parentSelector)) {
+                e.target.classList.add(activeClass);
+            }
+
+            calcTotal();
+
+        });
+    };
+
+
+    const getDynamicInfo = (selector) => {
+        const input = document.querySelector(selector);
+
+
+        input.addEventListener('input', () => {
+
+            if (input.value.match(/\D/g)) {
+                input.style.border = '1px solid red';
+            } else {
+                input.style.border = 'none';
+            }
+
+            switch (input.getAttribute('id')) {
+                case 'height':
+                    height = +input.value;
+                    break;
+                case 'weight':
+                    weight = +input.value;
+                    break;
+                case 'age':
+                    age = +input.value;
+                    break;
+            }
+            calcTotal();
+        });
+    }
+
+    getStaticInfo('#gender', 'calculating__choose-item_active');
+    getStaticInfo('.calculating__choose_big', 'calculating__choose-item_active');
+    getDynamicInfo('#height');
+    getDynamicInfo('#weight');
+    getDynamicInfo('#age');
 });
 

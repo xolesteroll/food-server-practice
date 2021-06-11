@@ -29,6 +29,11 @@
       "price": 21
     }
   ],
+  "deadline": [
+    {
+      "date": "2021-06-12"
+    }
+  ],
   "requests": [
     {
       "name": "sadsdad",
