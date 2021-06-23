@@ -1,7 +1,5 @@
-function timer() {
+function timer(id, deadLine) {
     // Timer
-
-    let deadLine = '2021-06-12';
 
 
     const getTimeOffset = (endtime) => {
@@ -54,8 +52,8 @@ function timer() {
         }
     };
 
-    setTimer('.timer', deadLine);
+    setTimer(id, deadLine);
 
 }
 
-module.exports = timer;
+export default timer;
