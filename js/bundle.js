@@ -328,8 +328,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "closeModal": () => (/* binding */ closeModal),
-/* harmony export */   "openModal": () => (/* binding */ openModal),
-/* harmony export */   "modalShowOnScroll": () => (/* binding */ modalShowOnScroll)
+/* harmony export */   "openModal": () => (/* binding */ openModal)
 /* harmony export */ });
 const openModal = (modalSelector, modalTimerId) => {
     const modal = document.querySelector(modalSelector);
@@ -349,12 +348,7 @@ const closeModal = (modalSelector) => {
 };
 
 
-const modalShowOnScroll = () => {
-    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-        openModal(modalSelector, modalTimerId);
-        window.removeEventListener('scroll', modalShowOnScroll);
-    }
-};
+
 
 
 function modal(triggerSelector, modalSelector, modalTimerId) {
@@ -380,12 +374,18 @@ function modal(triggerSelector, modalSelector, modalTimerId) {
         }
     });
 
+    const modalShowOnScroll = () => {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal(modalSelector, modalTimerId);
+            window.removeEventListener('scroll', modalShowOnScroll);
+        }
+    };
+
 
     window.addEventListener('scroll', modalShowOnScroll);
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (modal);
-
 
 
 
